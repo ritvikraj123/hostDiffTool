@@ -17,8 +17,7 @@ A minimal web application for comparing host snapshots and tracking changes in s
 
 ```bash
 # Clone and navigate to the project
-git clone <your-repo-url>
-cd censys_hostDiffTool
+git clone https://github.com/ritvikraj123/hostDiffTool.git
 
 # Install dependencies
 go mod download
