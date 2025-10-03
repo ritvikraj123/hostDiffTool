@@ -1,0 +1,212 @@
+{{define "content"}}
+<div class="container">
+    <h2>Snapshot Comparison</h2>
+    <p><a href="/" class="btn btn-secondary">← Back to Hosts</a></p>
+    
+    <div class="diff-summary">
+        <h3>Summary</h3>
+        <div class="summary-stats">
+            <div class="stat">
+                <span class="stat-label">Opened Ports:</span>
+                <span class="stat-value">{{len .DiffResult.OpenedPorts}}</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Closed Ports:</span>
+                <span class="stat-value">{{len .DiffResult.ClosedPorts}}</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Added Services:</span>
+                <span class="stat-value">{{len .DiffResult.AddedServices}}</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Removed Services:</span>
+                <span class="stat-value">{{len .DiffResult.RemovedServices}}</span>
+            </div>
+            <div class="stat">
+                <span class="stat-label">Service Changes:</span>
+                <span class="stat-value">{{len .DiffResult.ServiceChanges}}</span>
+            </div>
+        </div>
+    </div>
+    
+    {{if .DiffResult.OpenedPorts}}
+    <div class="diff-section">
+        <h3>Opened Ports</h3>
+        <div class="port-list opened">
+            {{range .DiffResult.OpenedPorts}}
+            <span class="port">{{.}}</span>
+            {{end}}
+        </div>
+    </div>
+    {{end}}
+    
+    {{if .DiffResult.ClosedPorts}}
+    <div class="diff-section">
+        <h3>Closed Ports</h3>
+        <div class="port-list closed">
+            {{range .DiffResult.ClosedPorts}}
+            <span class="port">{{.}}</span>
+            {{end}}
+        </div>
+    </div>
+    {{end}}
+    
+    {{if .DiffResult.AddedServices}}
+    <div class="diff-section">
+        <h3>Added Services</h3>
+        <table class="services-table">
+            <thead>
+                <tr>
+                    <th>Port/Protocol</th>
+                    <th>Service Name</th>
+                    <th>Product</th>
+                    <th>Vendor</th>
+                    <th>Version</th>
+                    <th>Vulnerabilities</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range $key, $service := .DiffResult.AddedServices}}
+                <tr class="added">
+                    <td>{{$key}}</td>
+                    <td>{{$service.ServiceName}}</td>
+                    <td>{{$service.Product}}</td>
+                    <td>{{$service.Vendor}}</td>
+                    <td>{{$service.Version}}</td>
+                    <td>
+                        {{range $service.VulnIDs}}
+                        <span class="vuln">{{.}}</span>
+                        {{end}}
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+    {{end}}
+    
+    {{if .DiffResult.RemovedServices}}
+    <div class="diff-section">
+        <h3>Removed Services</h3>
+        <table class="services-table">
+            <thead>
+                <tr>
+                    <th>Port/Protocol</th>
+                    <th>Service Name</th>
+                    <th>Product</th>
+                    <th>Vendor</th>
+                    <th>Version</th>
+                    <th>Vulnerabilities</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range $key, $service := .DiffResult.RemovedServices}}
+                <tr class="removed">
+                    <td>{{$key}}</td>
+                    <td>{{$service.ServiceName}}</td>
+                    <td>{{$service.Product}}</td>
+                    <td>{{$service.Vendor}}</td>
+                    <td>{{$service.Version}}</td>
+                    <td>
+                        {{range $service.VulnIDs}}
+                        <span class="vuln">{{.}}</span>
+                        {{end}}
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+    {{end}}
+    
+    {{if .DiffResult.ServiceChanges}}
+    <div class="diff-section">
+        <h3>Service Changes</h3>
+        <table class="changes-table">
+            <thead>
+                <tr>
+                    <th>Port/Protocol</th>
+                    <th>Changes</th>
+                    <th>Old Value</th>
+                    <th>New Value</th>
+                    <th>Vulns Added</th>
+                    <th>Vulns Removed</th>
+                </tr>
+            </thead>
+            <tbody>
+                {{range $key, $change := .DiffResult.ServiceChanges}}
+                <tr class="changed">
+                    <td>{{$key}}</td>
+                    <td>
+                        {{if $change.VendorChanged}}<span class="change-tag vendor">Vendor</span>{{end}}
+                        {{if $change.ProductChanged}}<span class="change-tag product">Product</span>{{end}}
+                        {{if $change.VersionChanged}}<span class="change-tag version">Version</span>{{end}}
+                    </td>
+                    <td>
+                        <div class="old-value">
+                            <div><strong>Vendor:</strong> {{$change.OldData.Vendor}}</div>
+                            <div><strong>Product:</strong> {{$change.OldData.Product}}</div>
+                            <div><strong>Version:</strong> {{$change.OldData.Version}}</div>
+                        </div>
+                    </td>
+                    <td>
+                        <div class="new-value">
+                            <div><strong>Vendor:</strong> {{$change.NewData.Vendor}}</div>
+                            <div><strong>Product:</strong> {{$change.NewData.Product}}</div>
+                            <div><strong>Version:</strong> {{$change.NewData.Version}}</div>
+                        </div>
+                    </td>
+                    <td>
+                        {{range $change.VulnsAdded}}
+                        <span class="vuln added">{{.}}</span>
+                        {{end}}
+                    </td>
+                    <td>
+                        {{range $change.VulnsRemoved}}
+                        <span class="vuln removed">{{.}}</span>
+                        {{end}}
+                    </td>
+                </tr>
+                {{end}}
+            </tbody>
+        </table>
+    </div>
+    {{end}}
+    
+    <div class="actions">
+        <button id="download-json" class="btn">Download JSON</button>
+    </div>
+</div>
+
+<script>
+document.getElementById('download-json').addEventListener('click', function() {
+    const data = {
+        left_id: {{.LeftID}},
+        right_id: {{.RightID}}
+    };
+    
+    fetch('/api/diff', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `diff_${data.left_snapshot_id}_${data.right_snapshot_id}.json`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    })
+    .catch(error => {
+        alert('Failed to download JSON: ' + error.message);
+    });
+});
+</script>
+{{end}}

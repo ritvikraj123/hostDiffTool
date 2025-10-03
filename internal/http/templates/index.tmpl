@@ -1,0 +1,70 @@
+{{define "content"}}
+<div class="container">
+    <h2>Upload Host Snapshot</h2>
+    <form action="/api/upload" method="post" enctype="multipart/form-data" class="upload-form">
+        <div class="form-group">
+            <label for="file">Select JSON file:</label>
+            <input type="file" id="file" name="file" accept=".json" required>
+        </div>
+        <button type="submit">Upload</button>
+    </form>
+    
+    <div id="upload-result" class="alert" style="display: none;"></div>
+    
+    <h2>Hosts</h2>
+    {{if .Hosts}}
+    <table class="hosts-table">
+        <thead>
+            <tr>
+                <th>IP Address</th>
+                <th>Snapshots</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .Hosts}}
+            <tr>
+                <td>{{.IP}}</td>
+                <td>{{.SnapshotCount}}</td>
+                <td><a href="/hosts/{{.IP}}" class="btn">View Snapshots</a></td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+    {{else}}
+    <p class="no-data">No hosts found. Upload a snapshot to get started.</p>
+    {{end}}
+</div>
+
+<script>
+document.querySelector('.upload-form').addEventListener('submit', function(e) {
+    e.preventDefault();
+    
+    const formData = new FormData(this);
+    const resultDiv = document.getElementById('upload-result');
+    
+    fetch('/api/upload', {
+        method: 'POST',
+        body: formData
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.error) {
+            resultDiv.className = 'alert alert-error';
+            resultDiv.textContent = 'Error: ' + data.error;
+        } else {
+            resultDiv.className = 'alert alert-success';
+            resultDiv.textContent = 'Upload successful!';
+            // Reload page after successful upload
+            setTimeout(() => window.location.reload(), 1000);
+        }
+        resultDiv.style.display = 'block';
+    })
+    .catch(error => {
+        resultDiv.className = 'alert alert-error';
+        resultDiv.textContent = 'Upload failed: ' + error.message;
+        resultDiv.style.display = 'block';
+    });
+});
+</script>
+{{end}}

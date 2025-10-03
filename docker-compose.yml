@@ -1,0 +1,15 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8080:8080"
+    volumes:
+      - appdata:/app/data
+    environment:
+      - PORT=8080
+      - DATABASE_URL=file:/app/app.db
+    restart: unless-stopped
+
+volumes:
+  appdata:
+    driver: local

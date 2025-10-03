@@ -1,0 +1,55 @@
+{{define "content"}}
+<div class="container">
+    <h2>Host: {{.IP}}</h2>
+    <p><a href="/" class="btn btn-secondary">← Back to Hosts</a></p>
+    
+    {{if .Snapshots}}
+    <h3>Snapshots</h3>
+    <table class="snapshots-table">
+        <thead>
+            <tr>
+                <th>ID</th>
+                <th>Observed At</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .Snapshots}}
+            <tr>
+                <td>{{.ID}}</td>
+                <td>{{.ObservedAt.Format "2006-01-02 15:04:05 UTC"}}</td>
+                <td><a href="/api/snapshots/{{.ID}}" class="btn btn-small" target="_blank">View JSON</a></td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+    
+    <h3>Compare Snapshots</h3>
+    <form action="/diff" method="get" class="compare-form">
+        <div class="form-group">
+            <label for="left">Left Snapshot:</label>
+            <select id="left" name="left" required>
+                <option value="">Select left snapshot</option>
+                {{range .Snapshots}}
+                <option value="{{.ID}}">{{.ObservedAt.Format "2006-01-02 15:04:05 UTC"}} (ID: {{.ID}})</option>
+                {{end}}
+            </select>
+        </div>
+        
+        <div class="form-group">
+            <label for="right">Right Snapshot:</label>
+            <select id="right" name="right" required>
+                <option value="">Select right snapshot</option>
+                {{range .Snapshots}}
+                <option value="{{.ID}}">{{.ObservedAt.Format "2006-01-02 15:04:05 UTC"}} (ID: {{.ID}})</option>
+                {{end}}
+            </select>
+        </div>
+        
+        <button type="submit" class="btn">Compare</button>
+    </form>
+    {{else}}
+    <p class="no-data">No snapshots found for this host.</p>
+    {{end}}
+</div>
+{{end}}
