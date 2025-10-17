@@ -16,7 +16,7 @@ func CompareSnapshots(old, new map[model.ServiceKey]model.ServiceData) model.Dif
 		ServiceChanges:  make(map[string]model.ServiceChange),
 	}
 
-	// Track all ports - learned this the hard way
+	// Track all ports
 	oldPorts := make(map[int]bool)
 	newPorts := make(map[int]bool)
 
@@ -91,7 +91,7 @@ func CompareSnapshots(old, new map[model.ServiceKey]model.ServiceData) model.Dif
 		}
 	}
 
-	// Sort port lists - Go's map iteration order is random
+	// Sort port lists
 	sort.Ints(result.OpenedPorts)
 	sort.Ints(result.ClosedPorts)
 
@@ -125,7 +125,7 @@ func compareVulns(oldVulns, newVulns model.VulnIDs) (added, removed model.VulnID
 		}
 	}
 	
-	// Sort for consistent output - this took me forever to debug
+	// Sort for consistent output
 	sort.Strings(added)
 	sort.Strings(removed)
 	
@@ -136,7 +136,7 @@ func compareVulns(oldVulns, newVulns model.VulnIDs) (added, removed model.VulnID
 func ParseServicesFromJSON(data map[string]interface{}) (map[model.ServiceKey]model.ServiceData, error) {
 	services := make(map[model.ServiceKey]model.ServiceData)
 	
-	// Try different possible keys for services - not sure if this is the best approach
+	// Try different possible keys for services
 	possibleKeys := []string{"services", "ports", "open_ports"}
 	var svcList []interface{}
 	

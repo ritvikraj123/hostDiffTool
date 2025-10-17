@@ -103,7 +103,7 @@ func (s *Server) handleIndex(w http.ResponseWriter, r *http.Request) {
 		hostsTable = `<tr><td colspan="3" class="no-data">No hosts found. Upload a snapshot to get started.</td></tr>`
 	}
 
-	// Simple HTML response for now - could use templates but this is easier
+	// Simple HTML response
 	w.Header().Set("Content-Type", "text/html")
 	html := fmt.Sprintf(`
 <!DOCTYPE html>
